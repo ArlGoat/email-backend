@@ -25,8 +25,8 @@ const limiter = rateLimit({
     message: { ok: false, error: "TOO_MANY_REQUESTS" }
 });
 
-// Apply rate limiting to the contact route
-app.use("/contact", limiter);
+// Apply rate limiting to the ignition route
+app.use("/ignition", limiter);
 
 // --- RESEND SETUP ---
 const resend = new Resend(process.env.RESEND_API_KEY);
@@ -55,7 +55,7 @@ app.get("/health", (req, res) => {
 });
 
 // --- MAIN EMAIL ENDPOINT ---
-app.post("/contact", async (req, res) => {
+app.post("/ignition", async (req, res) => {
     try {
         const { name, email, plan, message, company, phone } = req.body;
 
