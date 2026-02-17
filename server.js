@@ -76,14 +76,23 @@ app.post("/ignition", async (req, res) => {
             return res.status(400).json({ ok: false, error: "INVALID_EMAIL" });
         }
 
-        // Send email via Resend
-        const result = await sendEmail({ name, email, plan, message: message + (phone ? `\n\nPhone: ${phone}` : "") });
+        // Send email in the background (Fast Response)
+        sendEmail({
+            name,
+            email,
+            plan,
+            message: message + (phone ? `\n\nPhone: ${phone}` : "")
+        }).then(result => {
+            if (result.error) {
+                console.error("Delayed Resend error:", result.error);
+            } else {
+                console.log("Email sent successfully in background");
+            }
+        }).catch(err => {
+            console.error("Background Email Exception:", err);
+        });
 
-        if (result.error) {
-            console.error("Resend specific error:", result.error);
-            return res.status(500).json({ ok: false, error: "EMAIL_FAILED" });
-        }
-
+        // Respond to user immediately
         return res.status(200).json({ ok: true });
 
     } catch (err) {
